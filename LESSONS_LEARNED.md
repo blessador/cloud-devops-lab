@@ -170,23 +170,3 @@ Never Track Terraform Binaries or State in Version Control: Maintain a strict .g
 Explicitly Supply Azure Environment Variables: Define ARM_SUBSCRIPTION_ID in Git Bash sessions on Windows to prevent CLI auth subprocess freezes.
 
 Synchronize Resource Removal Across Modules: When commenting out or deleting resource blocks in main.tf, always check and clean corresponding references in outputs.tf and variables.tf.
-
-
----
-
-### How to Save & Push in Git Bash
-
-Run these commands from `/c/cloud-devops-lab` to update the repository on GitHub:
-
-```bash
-# 1. Ensure you are at repository root
-cd /c/cloud-devops-lab
-
-# 2. Stage the newly consolidated LESSONS_LEARNED.md
-git add LESSONS_LEARNED.md
-
-# 3. Commit changes
-git commit -m "docs: consolidate complete Day 1 troubleshooting log into LESSONS_LEARNED.md"
-
-# 4. Push cleanly to GitHub
-git push origin main
