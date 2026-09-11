@@ -8,41 +8,34 @@ Welcome to my **30-Day Cloud & DevOps Engineering Lab**. This repository documen
 
 | Day | Topic / Focus Area | Tech Stack | Status | Documentation |
 | :--- | :--- | :--- | :---: | :---: |
-| **Day 01** | Modular Network Infrastructure (VNet & Subnets) | Terraform, Azure CLI | ✅ Completed | [Day 01 Docs](./terraform/README.md) |
-| **Day 02** | Remote State Backend & Blob Storage Locks | Terraform, Azure Storage | ⏳ Next | Upcoming |
+| **Day 01** | Modular Network Infrastructure (VNet & Subnets) | Terraform, Azure CLI | ✅ Completed | [Day 01 Docs](./terraform/README.md#day-01-modular-azure-vnet-deployment) |
+| **Day 02** | Remote State Backend & Blob Storage Locks | Terraform, Azure Storage | ✅ Completed | [Day 02 Docs](./terraform/README.md#day-02-remote-state-backend--blob-storage) |
 | **Day 03** | Linux Compute, SSH Keys & NSG Firewall Rules | Terraform, Azure VM | 📅 Pending | Upcoming |
 
 ---
 
-## 🏗️ Day 01: Modular Azure VNet Deployment
+## 🏗️ Day 02: Remote State & Blob Storage Locks
 
 ### Overview
-Automated the core virtual network foundation using modular **Terraform (Infrastructure as Code)** within an enterprise-restricted Azure tenant. 
+Migrated local Terraform state files (`terraform.tfstate`) to a secure, centralized **Azure Blob Storage Backend**. Enabled automated state locking using Azure Blob leases to prevent concurrent execution conflicts in collaborative DevOps environments.
 
-### Key Features
-- **Strict Region Policy Compliance:** Deployed to `italynorth` to align with organizational allowed-region policies.
-- **Modular Terraform Design:** Reusable local module structure for VNet and Subnet isolation.
-- **Subnet Segmentation:** Separated workload layers into public (`10.0.0.0/24`) and private (`10.0.2.0/24`) subnets.
-
-### Deployed Architecture
-- **Resource Group:** `rg-cloud-devops-lab` (`italynorth`)
-- **Virtual Network:** `dev-vnet` (`10.0.0.0/16`)
-- **Subnets:**
-  - `snet-public-1` (`10.0.0.0/24`)
-  - `snet-private-1` (`10.0.2.0/24`)
+### Key Highlights
+- **State Security:** Removed local state files to eliminate plaintext secret exposure in local workspaces.
+- **Concurrency Control:** Automated state locking via Azure Blob leases during `terraform plan` and `terraform apply`.
+- **Policy Compliance:** Provisioned storage resources in `italynorth` to align with Azure for Students tenant policy guardrails.
 
 ---
 
 ## 📸 Proof of Implementation
 
-### 1. Terraform Execution Output
-![Terraform Apply Output](./docs/screenshots/day-01/01-terraform-apply.png)
+### 1. Storage Account & Container Provisioning
+![Storage Account Creation](./docs/screenshots/day-02/01-storage-created.png)
 
-### 2. Azure Resource Group Overview
-![Azure Portal Resource Group](./docs/screenshots/day-01/02-portal-resource-group.png)
+### 2. Terraform Backend Migration (`terraform init`)
+![Backend Migration](./docs/screenshots/day-02/02-backend-migration.png)
 
-### 3. Subnets Configuration
-![VNet Subnets Topology](./docs/screenshots/day-01/03-portal-vnet-subnets.png)
+### 3. Azure Portal — Remote State Blob Container
+![Remote State Blob Container](./docs/screenshots/day-02/03-remote-state-blob.png)
 
 ---
 
@@ -58,13 +51,11 @@ Automated the core virtual network foundation using modular **Terraform (Infrast
 git clone [https://github.com/blessador/cloud-devops-lab.git](https://github.com/blessador/cloud-devops-lab.git)
 cd cloud-devops-lab/terraform
 
-# Authenticate with Azure CLI
+# Authenticate & Set Active Subscription
 az login
-
-# Set Active Subscription
 export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
 
-# Initialize & Deploy Infrastructure
+# Initialize Remote Backend & Deploy
 terraform init
 terraform plan -out=tfplan
 terraform apply tfplan

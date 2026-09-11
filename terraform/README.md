@@ -1,7 +1,8 @@
-```markdown
-# 🛠️ Infrastructure as Code — Day 01 (Azure Network Module)
 
-This directory contains the modular Terraform code for deploying the baseline cloud networking layer on Microsoft Azure.
+```markdown
+# 🛠️ Infrastructure as Code — Azure Terraform Labs
+
+This directory contains the modular Terraform code for deploying cloud infrastructure across the 30-day lab series.
 
 ---
 
@@ -10,10 +11,11 @@ This directory contains the modular Terraform code for deploying the baseline cl
 ```text
 terraform/
 ├── main.tf              # Root configuration & module instantiation
-├── providers.tf         # AzureRM provider requirements & settings
+├── providers.tf         # AzureRM provider & remote backend block
 ├── variables.tf         # Global input variables
 ├── outputs.tf           # Root level deployment outputs
-├── .gitignore           # Prevents committing provider binaries & state
+├── backend_info.txt     # Created storage account metadata
+├── .gitignore           # Ignores local state, plans, and provider binaries
 └── modules/
     └── vnet/            # Custom reusable Virtual Network module
         ├── main.tf

@@ -1,15 +1,23 @@
 terraform {
   required_version = ">= 1.5.0"
+
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
       version = "~> 3.80.0"
     }
   }
+
+  # Remote State Backend Configuration
+  backend "azurerm" {
+    resource_group_name  = "rg-cloud-devops-lab"
+    storage_account_name = "sttfstatedevops4595cd ter "
+    container_name       = "tfstate"
+    key                  = "dev.terraform.tfstate"
+  }
 }
 
 provider "azurerm" {
   features {}
   skip_provider_registration = true
-  subscription_id            = "a8d78343-2961-4f48-8e72-6abab29a93af"
 }
