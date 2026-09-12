@@ -1,0 +1,2 @@
+Storage Account Name: sttfstatedevops4595
+Container Name: tfstate

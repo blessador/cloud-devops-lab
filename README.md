@@ -10,52 +10,39 @@ Welcome to my **30-Day Cloud & DevOps Engineering Lab**. This repository documen
 | :--- | :--- | :--- | :---: | :---: |
 | **Day 01** | Modular Network Infrastructure (VNet & Subnets) | Terraform, Azure CLI | ✅ Completed | [Day 01 Docs](./terraform/README.md#day-01-modular-azure-vnet-deployment) |
 | **Day 02** | Remote State Backend & Blob Storage Locks | Terraform, Azure Storage | ✅ Completed | [Day 02 Docs](./terraform/README.md#day-02-remote-state-backend--blob-storage) |
-| **Day 03** | Linux Compute, SSH Keys & NSG Firewall Rules | Terraform, Azure VM | 📅 Pending | Upcoming |
+| **Day 03** | Linux Compute, SSH Keys & NSG Firewall Rules | Terraform, Azure VM, SSH | ✅ Completed | [Day 03 Docs](./terraform/README.md#day-03-linux-compute--nsg-firewall) |
+| **Day 04** | Web Server Automation (NGINX & Cloud-Init) | Terraform, Cloud-Init, NGINX | 📅 Pending | Upcoming |
 
 ---
 
-## 🏗️ Day 02: Remote State & Blob Storage Locks
+## 🏗️ Day 03: Linux Compute & Network Security Groups
 
 ### Overview
-Migrated local Terraform state files (`terraform.tfstate`) to a secure, centralized **Azure Blob Storage Backend**. Enabled automated state locking using Azure Blob leases to prevent concurrent execution conflicts in collaborative DevOps environments.
+Provisioned an **Ubuntu 22.04 LTS Linux Virtual Machine** inside the public subnet (`snet-public-1`) in `austriaeast`, secured via an **Azure Network Security Group (NSG)** and public key SSH authentication.
 
-### Key Highlights
-- **State Security:** Removed local state files to eliminate plaintext secret exposure in local workspaces.
-- **Concurrency Control:** Automated state locking via Azure Blob leases during `terraform plan` and `terraform apply`.
-- **Policy Compliance:** Provisioned storage resources in `italynorth` to align with Azure for Students tenant policy guardrails.
+### Key Features
+- **Public Key Authentication:** Disabled password authentication in favor of 4096-bit RSA SSH keys (`devops_id_rsa`).
+- **Firewall Isolation:** Attached NSG restricting inbound network traffic exclusively to SSH (`TCP/22`).
+- **Standard Public IP:** Dynamic/Standard SKU Public IP association for remote administration.
+- **Resilient Compute Sizing:** Deployed `Standard_D2s_v3` VM size to navigate regional SKU quota constraints on Azure for Students.
 
 ---
 
 ## 📸 Proof of Implementation
 
-### 1. Storage Account & Container Provisioning
-![Storage Account Creation](./docs/screenshots/day-02/01-storage-created.png)
+### 1. Terraform Deployment Execution
+![Terraform Apply Output](./docs/screenshots/day-03/01-terraform-apply.png)
 
-### 2. Terraform Backend Migration (`terraform init`)
-![Backend Migration](./docs/screenshots/day-02/02-backend-migration.png)
+### 2. Azure Virtual Machine Portal Overview
+![Azure Portal VM Overview](./docs/screenshots/day-03/02-azure-vm-portal.png)
 
-### 3. Azure Portal — Remote State Blob Container
-![Remote State Blob Container](./docs/screenshots/day-02/03-remote-state-blob.png)
+### 3. Remote SSH Terminal Connection
+![SSH Terminal Session](./docs/screenshots/day-03/03-ssh-connection.png)
 
 ---
 
 ## 🛠️ Getting Started
 
-### Prerequisites
-- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) `v2.50.0+`
-- [Terraform CLI](https://developer.hashicorp.com/terraform/downloads) `v1.5.0+`
-
-### Quickstart Execution
 ```bash
-# Clone Repository
-git clone [https://github.com/blessador/cloud-devops-lab.git](https://github.com/blessador/cloud-devops-lab.git)
-cd cloud-devops-lab/terraform
-
-# Authenticate & Set Active Subscription
-az login
-export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-
-# Initialize Remote Backend & Deploy
-terraform init
-terraform plan -out=tfplan
-terraform apply tfplan
+# SSH into deployed VM
+ssh -i ~/.ssh/devops_id_rsa azureuser@<VM_PUBLIC_IP>

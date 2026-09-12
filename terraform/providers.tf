@@ -11,13 +11,17 @@ terraform {
   # Remote State Backend Configuration
   backend "azurerm" {
     resource_group_name  = "rg-cloud-devops-lab"
-    storage_account_name = "sttfstatedevops4595cd ter "
+    storage_account_name = "sttfstatedevops4595"
     container_name       = "tfstate"
     key                  = "dev.terraform.tfstate"
   }
 }
 
 provider "azurerm" {
-  features {}
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
   skip_provider_registration = true
 }
