@@ -30,8 +30,8 @@ Automated the installation and provisioning of an **NGINX Web Server** on Ubuntu
 
 ## 📸 Proof of Implementation
 
-### 1. NGINX HTTP Verification via Terminal
-![Curl Header Response](./docs/screenshots/day-04/01-curl-verification.png)
+### 1. Successful apply with port 80 rule & custom_data
+![Terraform Apply](./docs/screenshots/day-04/01-terraform-apply.png)
 
 ### 2. Live Web Server Landing Page
 ![NGINX Custom Landing Page](./docs/screenshots/day-04/02-nginx-browser.png)
