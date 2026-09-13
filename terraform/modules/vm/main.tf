@@ -7,7 +7,7 @@ resource "azurerm_public_ip" "pip" {
   sku                 = "Standard"
 }
 
-# 2. Network Security Group (Allow SSH)
+# 2. Network Security Group (Allow SSH & HTTP)
 resource "azurerm_network_security_group" "nsg" {
   name                = "nsg-dev-vm"
   location            = var.location
@@ -21,6 +21,18 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "allow-http-inbound"
+    priority                   = 110
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
@@ -51,7 +63,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                = "vm-dev-linux"
   location            = var.location
   resource_group_name = var.resource_group_name
-  size                = "Standard_D2s_v3" # Cost-effective burstable size
+  size                = "Standard_D2s_v3"
   admin_username      = var.admin_username
   network_interface_ids = [
     azurerm_network_interface.nic.id,
@@ -61,6 +73,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
     username   = var.admin_username
     public_key = var.ssh_public_key
   }
+
+  # INJECT CLOUD-INIT USER DATA SCRIPT
+  custom_data = filebase64("${path.module}/scripts/user_data.sh")
 
   os_disk {
     caching              = "ReadWrite"
