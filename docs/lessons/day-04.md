@@ -41,7 +41,7 @@ The custom_data script was updated in Terraform code, but NGINX was not installe
 
 Root Cause
 
-Cloud-Init scripts execute strictly once during the initial OS boot sequence. Updating custom_data on an already-running VM does not automatically trigger Cloud-Init to execute again.
+Cloud-Init scripts execute during the initial OS boot sequence. Updating custom_data on an already-running VM does not automatically cause Cloud-Init to execute again.
 
 Cloud-Init execution logs can be found at:
 
@@ -71,7 +71,9 @@ However, web browsers timed out or refused the connection.
 
 Root Cause
 
-Web browsers may automatically rewrite or upgrade http:// URLs to https://. This changes the connection from TCP port 80 to TCP port 443, which was blocked by the Network Security Group (NSG).
+Web browsers may automatically rewrite or upgrade http:// URLs to https://.
+
+This changes the connection from TCP port 80 to TCP port 443, which was blocked by the Network Security Group (NSG).
 
 Resolution
 
@@ -90,7 +92,9 @@ Cloud-Init reported:
 status: done
 
 
-within approximately two seconds, but NGINX was not installed. Additionally, /var/log/cloud-init-output.log contained no expected script execution logs.
+within approximately two seconds, but NGINX was not installed.
+
+Additionally, /var/log/cloud-init-output.log contained no expected script execution logs.
 
 Root Cause
 
@@ -141,7 +145,7 @@ from within the SSH session.
 
 Public IP verification was performed from a local client terminal outside the Azure VNet.
 
-Key Lessons Learned
+🔑 Key Lessons Learned
 Terraform state infrastructure is a dependency: If the backend resource group or storage account is deleted, Terraform must be reconfigured against a recreated backend.
 Cloud-Init is primarily a first-boot mechanism: Changes to custom_data do not mean an existing VM will automatically rerun the initialization script.
 HTTP and HTTPS are different network paths: A successful curl test against port 80 does not guarantee that a browser will connect successfully over HTTPS/port 443.
