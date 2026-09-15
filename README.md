@@ -1,35 +1,51 @@
-# 🚀 30-Day Cloud & DevOps Portfolio Lab
+# 🚀 30-Day Cloud & DevOps Portfolio Lab: Microsoft Azure & Terraform
 
-Welcome to my **30-Day Cloud & DevOps Engineering Lab**. This repository documents hands-on, production-grade infrastructure, automation pipelines, and cloud security implementations built daily on **Microsoft Azure** using **Terraform** and **DevOps best practices**.
-
----
-
-## 📅 Architecture & Progress Roadmap
-
-| Day | Topic / Focus Area | Tech Stack | Status | Documentation |
-| :--- | :--- | :--- | :---: | :---: |
-| **Day 01** | Modular Network Infrastructure (VNet & Subnets) | Terraform, Azure CLI | ✅ Completed | [Day 01 Docs](./terraform/README.md#day-01-modular-azure-vnet-deployment) |
-| **Day 02** | Remote State Backend & Blob Storage Locks | Terraform, Azure Storage | ✅ Completed | [Day 02 Docs](./terraform/README.md#day-02-remote-state-backend--blob-storage) |
-| **Day 03** | Linux Compute, SSH Keys & NSG Firewall Rules | Terraform, Azure VM, SSH | ✅ Completed | [Day 03 Docs](./terraform/README.md#day-03-linux-compute--nsg-firewall) |
-| **Day 04** | Web Server Automation (NGINX & Cloud-Init) | Terraform, Cloud-Init, NGINX | ✅ Completed | [Day 04 Docs](./terraform/README.md#day-04-automated-web-server-deployment) |
+Hands-on infrastructure engineering lab tracking daily progress in modular infrastructure as code (IaC), networking, load balancing, security, and cloud automation on Azure using Terraform.
 
 ---
 
-## 🌐 Day 04: Automated Web Server Deployment (NGINX & Cloud-Init)
+## 📅 Daily Execution Log
 
-### Overview
-Automated the installation and provisioning of an **NGINX Web Server** on Ubuntu 22.04 LTS using **Cloud-Init (`custom_data`)** during VM boot. Updated the Network Security Group to allow inbound HTTP traffic on **TCP Port 80** and deployed a custom HTML dashboard.
-
-### Key Features
-- **Zero-Touch Bootstrapping:** Injected an executable shell script via Base64 `custom_data` to automatically handle `apt` updates, package installation, and service configuration.
-- **Inbound HTTP Security Rule:** Added Priority 110 rule to NSG to open Port 80 for public traffic while maintaining SSH restriction.
-- **Custom Landing Page:** Configured NGINX to serve a styled HTML landing page confirming deployment parameters and region location.
-- **Automated Lifecycle Integration:** Enforced Unix line endings (`LF`) and configured `terraform taint` workflows for clean, repeatable instance provisioning.
+| Day | Module / Architecture Target | Key Deliverables | Status |
+| :--- | :--- | :--- | :---: |
+| **Day 01** | **VNet & Subnet Modularization** | Modularized VNet, Subnet, and Resource Group structure | Completed |
+| **Day 02** | **Terraform Remote State** | Configured Azure Storage Account backend with Blob lease locking | Completed |
+| **Day 03** | **Network Security Groups** | NSG rules restricting SSH (Port 22) & HTTP (Port 80) access | Completed |
+| **Day 04** | **VM Provisioning & Cloud-Init** | Single Ubuntu 22.04 VM auto-provisioned with NGINX via Cloud-Init | Completed |
+| **Day 05** | **Standard Load Balancer & Scaling** | Multi-node (`count = 2`) backend cluster under Azure Standard LB | Completed |
 
 ---
 
-## 📸 Proof of Implementation
+## 🛠️ Architecture Overview (Day 05 State)
 
+```text
+[ Internet / Client ]
+          │
+          ▼
+┌────────────────────────────────────────────────────────┐
+│   Azure Standard Load Balancer (Public IP: 68.210.98.7)│
+└─────────────────────────┬──────────────────────────────┘
+                          │ (Port 80 TCP Probe & Traffic)
+        ┌─────────────────┴─────────────────┐
+        ▼                                   ▼
+┌─────────────────────────┐       ┌─────────────────────────┐
+│  NIC: nic-dev-vm-1      │       │  NIC: nic-dev-vm-2      │
+│  VM: vm-dev-web-1       │       │  VM: vm-dev-web-2       │
+│  (Ubuntu 22.04 / NGINX) │       │  (Ubuntu 22.04 / NGINX) │
+└─────────────────────────┘       └─────────────────────────┘
+```
+
+## 🛠️ Tech Stack & Tools
+
+- **Cloud Provider:** Microsoft Azure
+- **IaC Tool:** Terraform v1.x (AzureRM Provider ~> 3.0)
+- **OS / Server:** Ubuntu Server 22.04 LTS / NGINX Web Server
+- **Local Terminal:** Git Bash (Windows MSYS2)
+- **Version Control:** Git & GitHub
+
+## 📂 Repository Structure
+
+<<<<<<< HEAD
 ### 1. Successful apply with port 80 rule & custom_data
 ![Terraform Apply](./docs/screenshots/day-04/01-terraform-apply.png)
 
@@ -49,3 +65,22 @@ curl -I http://<VM_PUBLIC_IP>
 
 # Fetch custom HTML landing page
 curl http://<VM_PUBLIC_IP>
+=======
+```text
+cloud-devops-lab/
+├── README.md                          # Global Portfolio Documentation
+├── terraform/                         # Primary Terraform Configuration Root
+│   ├── main.tf                        # Root Module & Azure Provider Setup
+│   ├── variables.tf                   # Global Input Variables
+│   ├── outputs.tf                     # Environment Output Definitions
+│   ├── terraform.tfvars               # Infrastructure Variable Overrides
+│   └── modules/                       # Reusable IaC Modules
+│       ├── vnet/                      # Virtual Network & Subnet Module
+│       └── vm/                        # Multi-Node VM & Load Balancer Module
+└── docs/
+    ├── lessons/
+    │   └── day-05.md                  # Day 05 Detailed Incident Log & Verification
+    └── screenshots/
+        └── day-05/                    # Visual Proof of Load Balancing & LB Configuration
+```
+>>>>>>> c2359cd (docs(day-05): complete load balancer integration and lesson logs)

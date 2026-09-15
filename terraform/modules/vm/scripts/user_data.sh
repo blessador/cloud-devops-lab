@@ -1,19 +1,19 @@
+cat << 'EOF' > /c/cloud-devops-lab/terraform/modules/vm/scripts/user_data.sh
 #!/bin/bash
-# System updates & NGINX installation
 apt-get update -y
 apt-get install -y nginx
 
-# Ensure NGINX is enabled and running
 systemctl start nginx
 systemctl enable nginx
 
-# Inject custom landing page
+HOSTNAME=$(hostname)
+
 cat <<HTML > /var/www/html/index.html
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Day 04 - Cloud & DevOps Portfolio Lab</title>
+    <title>Day 05 - Cloud & DevOps Portfolio Lab</title>
     <style>
         body { font-family: Arial, sans-serif; text-align: center; margin-top: 10%; background-color: #f4f4f9; }
         h1 { color: #0078d4; }
@@ -22,10 +22,13 @@ cat <<HTML > /var/www/html/index.html
 </head>
 <body>
     <div class="card">
-        <h1>Day 04 Complete!</h1>
-        <p>Automated NGINX Web Server Provisioned via Terraform & Cloud-Init</p>
-        <p><strong>Region:</strong> Austria East</p>
+        <h1>🚀 Day 05 Complete!</h1>
+        <p>Azure Load Balancer Active</p>
+        <p><strong>Served by Node:</strong> $HOSTNAME</p>
     </div>
 </body>
 </html>
 HTML
+EOF
+
+sed -i 's/\r$//' /c/cloud-devops-lab/terraform/modules/vm/scripts/user_data.sh

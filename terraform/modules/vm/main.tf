@@ -1,13 +1,23 @@
-# 1. Public IP Address (Standard SKU)
-resource "azurerm_public_ip" "pip" {
-  name                = "pip-dev-vm"
+# 1. Load Balancer Public IP (Standard SKU)
+resource "azurerm_public_ip" "lb_pip" {
+  name                = "pip-lb-dev"
   location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
-# 2. Network Security Group (Allow SSH & HTTP)
+# 2. Individual Public IPs for SSH / Direct Management Access
+resource "azurerm_public_ip" "vm_pip" {
+  count               = 2
+  name                = "pip-dev-vm-${count.index + 1}"
+  location            = var.location
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+# 3. Network Security Group
 resource "azurerm_network_security_group" "nsg" {
   name                = "nsg-dev-vm"
   location            = var.location
@@ -26,7 +36,19 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "allow-http-inbound"
+    name                       = "AllowAzureLoadBalancerInbound"
+    priority                   = 105
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "AzureLoadBalancer"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "AllowHTTP"
     priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
@@ -38,9 +60,10 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-# 3. Network Interface Card
+# 4. Network Interfaces (NICs for 2 VMs)
 resource "azurerm_network_interface" "nic" {
-  name                = "nic-dev-vm"
+  count               = 2
+  name                = "nic-dev-vm-${count.index + 1}"
   location            = var.location
   resource_group_name = var.resource_group_name
 
@@ -48,25 +71,27 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.pip.id
+    public_ip_address_id          = azurerm_public_ip.vm_pip[count.index].id
   }
 }
 
-# Associate NSG to NIC
+# Associate NSG with each NIC
 resource "azurerm_network_interface_security_group_association" "nsg_assoc" {
-  network_interface_id      = azurerm_network_interface.nic.id
+  count                     = 2
+  network_interface_id      = azurerm_network_interface.nic[count.index].id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-# 4. Linux Virtual Machine
+# 5. Linux Virtual Machine Instances
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = "vm-dev-linux"
+  count               = 2
+  name                = "vm-dev-web-${count.index + 1}"
   location            = var.location
   resource_group_name = var.resource_group_name
   size                = "Standard_D2s_v3"
   admin_username      = var.admin_username
   network_interface_ids = [
-    azurerm_network_interface.nic.id,
+    azurerm_network_interface.nic[count.index].id,
   ]
 
   admin_ssh_key {
@@ -74,7 +99,6 @@ resource "azurerm_linux_virtual_machine" "vm" {
     public_key = var.ssh_public_key
   }
 
-  # INJECT CLOUD-INIT USER DATA SCRIPT
   custom_data = filebase64("${path.module}/scripts/user_data.sh")
 
   os_disk {

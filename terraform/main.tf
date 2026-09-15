@@ -4,7 +4,7 @@ resource "azurerm_resource_group" "rg" {
   tags = {
     Environment = "Dev"
     Project     = "cloud-devops-lab"
-    Day         = "01"
+    Day         = "05"
   }
 }
 
@@ -22,4 +22,12 @@ module "vm" {
   subnet_id           = module.vnet.public_subnet_ids[0]
   admin_username      = "azureuser"
   ssh_public_key      = file("~/.ssh/devops_id_rsa.pub")
+}
+
+module "load_balancer" {
+  source              = "./modules/load_balancer"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  public_ip_id        = module.vm.lb_public_ip_id
+  nic_ids             = module.vm.nic_ids
 }
